@@ -44,7 +44,7 @@ public struct InfiniteScrollView<
      - emptyView: A `View` to display when the list is empty.
      - row: A `View` to display for each item in the list.
      */
-    public init(axis: InfiniteAxis = .horizontal,
+    public init(axis: InfiniteAxis = .vertical,
                 items: [T],
                 canLoadMore: Binding<Bool>,
                 uiState: UIState,
