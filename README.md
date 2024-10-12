@@ -69,7 +69,7 @@ struct ContentView: View {
         // Refresh items logic
     }
 }
-]```
+```
 
 ### Parameters
 - items: An array of items to display.
