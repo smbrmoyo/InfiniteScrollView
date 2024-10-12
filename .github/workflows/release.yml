@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*" # Triggers on version tags, e.g., v1.0.0
+
+jobs:
+  release:
+    runs-on: macos-latest # Specify the operating system
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: swift build
+
+      - name: Run Tests
+        run: swift test
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          body: |
+            ## Fixes
+            - Fixed UIState default value
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub Actions
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          files: |
+            .build/release/YourPackageName.zip  # Specify the path to your built package
