@@ -18,9 +18,10 @@ public struct InfiniteScrollView<
     
     // MARK: - Properties
     
+    private let axis: InfiniteAxis
     public var items: [T]
-    @State public var isLoadingMore = false
-    @Binding public var canLoadMore: Bool
+    @State private var isLoadingMore = false
+    @Binding private var canLoadMore: Bool
     public var uiState: UIState
     public var spacing: CGFloat = 8
     
@@ -43,7 +44,8 @@ public struct InfiniteScrollView<
      - emptyView: A `View` to display when the list is empty.
      - row: A `View` to display for each item in the list.
      */
-    public init(items: [T],
+    public init(axis: InfiniteAxis = .horizontal,
+                items: [T],
                 canLoadMore: Binding<Bool>,
                 uiState: UIState,
                 spacing: CGFloat = 8,
@@ -51,6 +53,7 @@ public struct InfiniteScrollView<
                 refresh: @escaping () async -> () = {},
                 @ViewBuilder emptyView: @escaping () -> EmptyContent,
                 @ViewBuilder row: @escaping (T) -> Content) {
+        self.axis = axis
         self.items = items
         self._canLoadMore = canLoadMore
         self.uiState = uiState
@@ -64,10 +67,11 @@ public struct InfiniteScrollView<
     // MARK: - Body
     
     public var body: some View {
-        VStack {
+        Group {
             if !items.isEmpty && uiState == .idle {
-                ScrollView {
-                    LazyVStack(spacing: spacing) {
+                VHScrollView(axis: axis == .vertical ? .vertical : .horizontal) {
+                    LazyVHStack(axis: axis == .vertical ? .vertical : .horizontal,
+                                spacing: spacing) {
                         ForEach(items) { item in
                             row(item)
                         }
