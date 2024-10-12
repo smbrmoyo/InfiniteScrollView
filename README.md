@@ -22,7 +22,8 @@ You can add `InfiniteScrollView` to your project using Swift Package Manager. Ad
 ```swift
 dependencies: [
     .package(url: "https://github.com/smbrmoyo/InfiniteScrollView.git", from: "1.0.0")
-]```
+]
+```
 
 ## Xcode
 
