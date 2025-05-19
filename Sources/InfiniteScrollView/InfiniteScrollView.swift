@@ -15,7 +15,6 @@ public struct InfiniteScrollView<
     EmptyContent: View,
     Content: View
 >: View {
-    
     // MARK: - Properties
     
     private let axis: InfiniteAxis
@@ -23,7 +22,8 @@ public struct InfiniteScrollView<
     @State private var isLoadingMore = false
     @Binding private var canLoadMore: Bool
     public var uiState: UIState
-    public var spacing: CGFloat = 8
+    public var spacing: CGFloat
+    var insets: EdgeInsets = .init()
     
     public var loadMoreItems: () async -> ()
     public var refresh: () async -> ()
@@ -38,7 +38,7 @@ public struct InfiniteScrollView<
      - items: The `Array` of items to be displayed.
      - canLoadMore: A `Binding` to a `Bool` that determines if more items can be loaded.
      - uiState: The current state of the UI, used to show loading indicators or empty views.
-     - spacing: The spacing between rows in the stack (default is 8).
+     - spacing: The spacing between rows in the stack (default is 0).
      - loadMoreItems: A closure that is called to load more items when scrolling to the bottom.
      - refresh: A closure that is called to refresh the `ScrollView`  by pulling down.
      - emptyView: A `View` to display when the list is empty.
@@ -48,7 +48,7 @@ public struct InfiniteScrollView<
                 items: [T],
                 canLoadMore: Binding<Bool>,
                 uiState: UIState,
-                spacing: CGFloat = 8,
+                spacing: CGFloat = 0,
                 loadMoreItems: @escaping () async -> () = {},
                 refresh: @escaping () async -> () = {},
                 @ViewBuilder emptyView: @escaping () -> EmptyContent,
@@ -70,8 +70,11 @@ public struct InfiniteScrollView<
         Group {
             if !items.isEmpty && uiState == .idle {
                 VHScrollView(axis: axis == .vertical ? .vertical : .horizontal) {
-                    LazyVHStack(axis: axis == .vertical ? .vertical : .horizontal,
-                                spacing: spacing) {
+                    LazyVHStack(
+                        axis: axis == .vertical ? .vertical : .horizontal,
+                        spacing: spacing,
+                        contentInsets: insets
+                    ) {
                         ForEach(items) { item in
                             row(item)
                         }
@@ -86,7 +89,7 @@ public struct InfiniteScrollView<
                     }
                 }
                 .refreshable {
-                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    try? await Task.sleep(nanoseconds: 200_000_000)
                     await refresh()
                 }
             } else if items.isEmpty && uiState == .loading {
@@ -110,7 +113,7 @@ public struct InfiniteScrollView<
         
         Task {
             isLoadingMore = true
-            try? await Task.sleep(nanoseconds: 300_000_000)
+            try? await Task.sleep(nanoseconds: 200_000_000)
             await loadMoreItems()
             isLoadingMore = false
         }

@@ -11,7 +11,20 @@ import SwiftUI
 public struct LazyVHStack<Content: View>: View {
     let axis: Axis
     let spacing: CGFloat
+    let contentInsets: EdgeInsets
     @ViewBuilder let content: () -> Content
+    
+    public init(
+            axis: Axis,
+            spacing: CGFloat,
+            contentInsets: EdgeInsets = .init(),
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.axis = axis
+            self.spacing = spacing
+            self.contentInsets = contentInsets
+            self.content = content
+        }
 
     public var body: some View {
         Group {
@@ -20,10 +33,12 @@ public struct LazyVHStack<Content: View>: View {
                 LazyVStack(spacing: spacing) {
                     content()
                 }
+                .padding(contentInsets)
             case .horizontal:
                 LazyHStack(spacing: spacing) {
                     content()
                 }
+                .padding(contentInsets)
             }
         }
     }
